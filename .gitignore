@@ -1,0 +1,5 @@
+/build
+/dist
+/keccak.c
+/keccak.so
+/keccak.pyd
