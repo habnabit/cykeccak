@@ -68,13 +68,30 @@ else:
     keccak_extension.sources.append('keccak.pyx')
 
 
+with open('README', 'rb') as infile:
+    long_description = infile.read()
+
 setup(
     name='cykeccak',
     version=version,
     description='Cython bindings to the Keccak sponge function',
+    long_description=long_description,
     author='Aaron Gallagher',
     author_email='_@habnab.it',
     url='https://github.com/habnabit/cykeccak',
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: ISC License (ISCL)',
+        'Operating System :: POSIX',
+        'Programming Language :: Cython',
+        'Programming Language :: C',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Security :: Cryptography',
+    ],
+    license='ISC',
+    platforms=['POSIX'],
 
     cmdclass={'build_ext': build_ext},
     ext_modules=[keccak_extension],
