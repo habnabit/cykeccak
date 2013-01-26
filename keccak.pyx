@@ -2,6 +2,15 @@ from cpython.bytes cimport (PyBytes_FromStringAndSize,
                             PyBytes_AsStringAndSize,
                             PyBytes_AS_STRING)
 
+# these get defined in setup.py.
+cdef extern from *:
+    char *CYKECCAK_VERSION
+    char *CYKECCAK_SHA
+
+__version__ = CYKECCAK_VERSION
+__author__ = "Aaron Gallagher <_@habnab.it>"
+__sha__ = CYKECCAK_SHA
+
 cdef extern from "KeccakSponge.h":
     ctypedef struct spongeState:
         bint squeezing
