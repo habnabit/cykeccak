@@ -1,3 +1,6 @@
+# Copyright (c) Aaron Gallagher <_@habnab.it>
+# See COPYING for details.
+
 from distutils.command.build_ext import build_ext
 from distutils.core import setup
 from distutils.extension import Extension

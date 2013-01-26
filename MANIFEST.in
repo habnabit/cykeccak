@@ -1,2 +1,2 @@
 graft src
-include version.txt keccak.c
+include version.txt keccak.c COPYING

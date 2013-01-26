@@ -1,3 +1,6 @@
+# Copyright (c) Aaron Gallagher <_@habnab.it>
+# See COPYING for details.
+
 from cpython.bytes cimport (PyBytes_FromStringAndSize,
                             PyBytes_AsStringAndSize,
                             PyBytes_AS_STRING)
