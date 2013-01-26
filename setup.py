@@ -23,7 +23,11 @@ keccak_extension = Extension(
 try:
     from Cython.Distutils import build_ext
 except ImportError:
-    print "cython not found; using previously-cython'd .c file."
+    if not os.path.exists('keccak.c'):
+        print "cython not usable and no cython'd files present."
+        print "are you installing from a git clone or github tarball?"
+        raise
+    print "cython not usable; using previously-cython'd .c file."
     keccak_extension.sources.append('keccak.c')
 else:
     keccak_extension.sources.append('keccak.pyx')
