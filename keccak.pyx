@@ -68,8 +68,6 @@ cdef class Sponge:
         if Absorb(&self.state, <unsigned char *>buffer, length * 8):
             raise KeccakError()
 
-    update = absorb
-
     def squeeze(self, n_bytes):
         "Squeeze some output data from the sponge."
         output = PyBytes_FromStringAndSize(NULL, n_bytes)
@@ -77,8 +75,62 @@ cdef class Sponge:
             raise KeccakError()
         return output
 
-    digest = squeeze
 
-    def hexdigest(self, n_bytes):
-        "Squeeze some output data from the sponge encoded with hexadecimal digits."
-        return self.squeeze(n_bytes).encode('hex')
+class _SHA3Base:
+    "A class implementing the primary functionality of the SHA-3 functions."
+    n_bits = None
+    sponge_factory = Sponge
+
+    def __init__(self, string=None):
+        capacity = self.n_bits * 2
+        rate = 1600 - capacity
+        self.sponge = self.sponge_factory(rate, capacity)
+        if string is not None:
+            self.update(string)
+        self._digest = None
+
+    def update(self, string):
+        """Absorb some input data into the underlying sponge.
+
+        Unlike hash implementations in the standard library ``hashlib``,
+        ``update`` can't be called again after calling ``digest`` once.
+        """
+
+        self.sponge.absorb(string)
+
+    def digest(self):
+        """Squeeze a fixed amount of data from the underlying sponge.
+
+        Unlike hash implementations in the standard library ``hashlib``,
+        ``update`` can't be called again after calling ``digest`` once. As a
+        result, and unlike ``Sponge.squeeze``, successive calls to ``digest``
+        will always return the same value.
+        """
+
+        # this value has to be saved because squeezing a sponge multiple times
+        # will give different output every time.
+        ret = self._digest
+        if ret is None:
+            ret = self._digest = self.sponge.squeeze(self.n_bits // 8)
+        return ret
+
+    def hexdigest(self):
+        "Like ``digest``, but the output is encoded with hexadecimal digits."
+        return self.digest().encode('hex')
+
+
+class sha3_224(_SHA3Base):
+    "224-bit SHA-3."
+    n_bits = 224
+
+class sha3_256(_SHA3Base):
+    "256-bit SHA-3."
+    n_bits = 256
+
+class sha3_384(_SHA3Base):
+    "384-bit SHA-3."
+    n_bits = 384
+
+class sha3_512(_SHA3Base):
+    "512-bit SHA-3."
+    n_bits = 512
