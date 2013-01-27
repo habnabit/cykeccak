@@ -1,2 +1,2 @@
 graft src
-include version.txt keccak.c COPYING
+include version.txt keccak.c COPYING test_keccak.py
