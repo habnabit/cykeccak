@@ -27,6 +27,10 @@ try:
     proc = subprocess.Popen(['git', 'describe', '--tags', '--long'],
                             stdout=subprocess.PIPE)
 except OSError:
+    if not os.path.exists('version.txt'):
+        print "git-describe failed and version.txt isn't present."
+        print "are you installing from a github tarball?"
+        raise
     print "couldn't determine version from git; using version.txt"
     with open('version.txt', 'rb') as infile:
         raw_version = infile.read()
@@ -59,7 +63,7 @@ try:
     from Cython.Distutils import build_ext
 except ImportError:
     if not os.path.exists('keccak.c'):
-        print "cython not usable and no cython'd files present."
+        print "cython isn't usable and pre-cython'd files aren't present."
         print "are you installing from a git clone or github tarball?"
         raise
     print "cython not usable; using previously-cython'd .c file."
