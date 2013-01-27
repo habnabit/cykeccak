@@ -72,7 +72,7 @@ else:
     keccak_extension.sources.append('keccak.pyx')
 
 
-with open('README', 'rb') as infile:
+with open('README.rst', 'rb') as infile:
     long_description = infile.read()
 
 setup(
