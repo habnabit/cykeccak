@@ -78,7 +78,7 @@ with open('README.rst', 'rb') as infile:
 setup(
     name='cykeccak',
     version=version,
-    description='Cython bindings to the Keccak sponge function',
+    description='Cython bindings to the Keccak sponge and SHA-3 functions',
     long_description=long_description,
     author='Aaron Gallagher',
     author_email='_@habnab.it',
