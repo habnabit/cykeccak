@@ -27,13 +27,12 @@ try:
     proc = subprocess.Popen(['git', 'describe', '--tags', '--long'],
                             stdout=subprocess.PIPE)
 except OSError:
-    git_failed = True
+    raw_version = None
 else:
     raw_version = proc.communicate()[0].strip()
-    # git failed if the string is empty
-    git_failed = not raw_version
 
-if git_failed:
+# git failed if the string is empty
+if not raw_version:
     if not os.path.exists('version.txt'):
         print "git-describe failed and version.txt isn't present."
         print "are you installing from a github tarball?"
