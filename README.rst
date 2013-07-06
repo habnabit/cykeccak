@@ -1,3 +1,5 @@
+.. image:: https://travis-ci.org/habnabit/cykeccak.png
+
 ========
 cykeccek
 ========
