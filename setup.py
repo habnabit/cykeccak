@@ -19,7 +19,7 @@ build_ext = build_ext
 keccak_implementation = os.environ.get('CYKECCAK_IMPLEMENTATION')
 if keccak_implementation is None:
     import struct
-    if struct.calcsize('P') == 8:
+    if struct.calcsize(b'P') == 8:
         keccak_implementation = 'opt64'
     else:
         keccak_implementation = 'opt32'
@@ -58,11 +58,12 @@ else:
 
 # set up the extension with the version and keccak sources.
 keccak_extension = Extension(
-    'keccak',
-    ['src/KeccakSponge.c', 'src/KeccakF-1600-%s.c' % (keccak_implementation,)],
+    str('keccak'),
+    [str('src/KeccakSponge.c'),
+     str('src/KeccakF-1600-%s.c' % (keccak_implementation,))],
     include_dirs=['src'],
-    define_macros=[('CYKECCAK_VERSION', '"%s"' % (version,)),
-                   ('CYKECCAK_SHA', '"%s"' % (sha.lstrip('g'),))],
+    define_macros=[('CYKECCAK_VERSION', str('"%s"' % (version,))),
+                   ('CYKECCAK_SHA', str('"%s"' % (sha.lstrip('g'),)))],
 )
 
 
