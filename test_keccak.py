@@ -169,7 +169,8 @@ class SpongeRandomTestCase(TestCase):
             self.assertEqual(self.rng.getrandbits(x), 0)
 
     def test_random(self):
-        self.assertLess(self.rng.random(), 1)
+        self.assert_(self.rng.random() < 1)
+        self.assertAlmostEqual(self.rng.random(), 1)
         self.assertEqual(self.rng.random() + RECIP_BPF, 1)
         self.rng.sponge.byte = b'\x00'
         self.assertEqual(self.rng.random(), 0)
