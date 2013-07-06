@@ -23,9 +23,9 @@ cdef extern from "KeccakSponge.h":
         unsigned int rate
         unsigned int capacity
 
-    int InitSponge(spongeState *, unsigned int rate, unsigned int capacity)
-    int Absorb(spongeState *, unsigned char *, unsigned long long)
-    int Squeeze(spongeState *, unsigned char *, unsigned long long)
+    int InitSponge(spongeState *, unsigned int rate, unsigned int capacity) nogil
+    int Absorb(spongeState *, unsigned char *, unsigned long long) nogil
+    int Squeeze(spongeState *, unsigned char *, unsigned long long) nogil
 
 class KeccakError(Exception):
     pass
@@ -68,13 +68,20 @@ cdef class Sponge:
         if self.state.squeezing:
             raise KeccakError("can't absorb after starting to squeeze")
         PyBytes_AsStringAndSize(data, &buffer, &length)
-        if Absorb(&self.state, <unsigned char *>buffer, length * 8):
+        with nogil:
+            res = Absorb(&self.state, <unsigned char *>buffer, length * 8)
+        if res:
             raise KeccakError()
 
     def squeeze(self, n_bytes):
         "Squeeze some output data from the sponge."
-        output = PyBytes_FromStringAndSize(NULL, n_bytes)
-        if Squeeze(&self.state, <unsigned char *>PyBytes_AS_STRING(output), n_bytes * 8):
+        cdef unsigned char *buffer
+        cdef unsigned long long ull_n_bytes = n_bytes
+        output = PyBytes_FromStringAndSize(NULL, ull_n_bytes)
+        buffer = <unsigned char *>PyBytes_AS_STRING(output)
+        with nogil:
+            res = Squeeze(&self.state, buffer, ull_n_bytes * 8)
+        if res:
             raise KeccakError()
         return output
 
