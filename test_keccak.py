@@ -17,7 +17,7 @@ class SHA3TestCaseMixin(object):
 
     def assertHashesEqual(self, hash_obj, hex_hash):
         "Assert that the hex and non-hex digests match an expected value."
-        self.assertEqual(hash_obj.digest(), unhexlify(hex_hash))
+        self.assertEqual(hash_obj.digest(), unhexlify(hex_hash.encode()))
         self.assertEqual(hash_obj.hexdigest(), hex_hash)
 
     def test_empty_hash(self):
