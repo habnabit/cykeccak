@@ -1,11 +1,14 @@
 # Copyright (c) Aaron Gallagher <_@habnab.it>
 # See COPYING for details.
 
+from __future__ import print_function, unicode_literals
+
 from distutils.command.build_ext import build_ext
 from distutils.core import setup
 from distutils.extension import Extension
 import os
 import subprocess
+import sys
 
 # silence, pyflakes.
 build_ext = build_ext
@@ -29,19 +32,19 @@ try:
 except OSError:
     raw_version = None
 else:
-    raw_version = proc.communicate()[0].strip()
+    raw_version = proc.communicate()[0].strip().decode()
 
 # git failed if the string is empty
 if not raw_version:
     if not os.path.exists('version.txt'):
-        print "git-describe failed and version.txt isn't present."
-        print "are you installing from a github tarball?"
-        raise
-    print "couldn't determine version from git; using version.txt"
-    with open('version.txt', 'rb') as infile:
+        print("git-describe failed and version.txt isn't present.")
+        print("are you installing from a github tarball?")
+        sys.exit(1)
+    print("couldn't determine version from git; using version.txt")
+    with open('version.txt', 'r') as infile:
         raw_version = infile.read()
 else:
-    with open('version.txt', 'wb') as outfile:
+    with open('version.txt', 'w') as outfile:
         outfile.write(raw_version)
 
 
@@ -68,16 +71,16 @@ try:
     from Cython.Distutils import build_ext
 except ImportError:
     if not os.path.exists('keccak.c'):
-        print "cython isn't usable and pre-cython'd files aren't present."
-        print "are you installing from a git clone or github tarball?"
+        print("cython isn't usable and pre-cython'd files aren't present.")
+        print("are you installing from a git clone or github tarball?")
         raise
-    print "cython not usable; using previously-cython'd .c file."
+    print("cython not usable; using previously-cython'd .c file.")
     keccak_extension.sources.append('keccak.c')
 else:
     keccak_extension.sources.append('keccak.pyx')
 
 
-with open('README.rst', 'rb') as infile:
+with open('README.rst', 'r') as infile:
     long_description = infile.read()
 
 setup(

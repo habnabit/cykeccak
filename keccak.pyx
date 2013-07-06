@@ -1,9 +1,12 @@
 # Copyright (c) Aaron Gallagher <_@habnab.it>
 # See COPYING for details.
 
+import binascii
+
 from cpython.bytes cimport (PyBytes_FromStringAndSize,
                             PyBytes_AsStringAndSize,
                             PyBytes_AS_STRING)
+from cpython.version cimport PY_MAJOR_VERSION
 
 # these get defined in setup.py.
 cdef extern from *:
@@ -116,7 +119,10 @@ class _SHA3Base:
 
     def hexdigest(self):
         "Like ``digest``, but the output is encoded with hexadecimal digits."
-        return self.digest().encode('hex')
+        if PY_MAJOR_VERSION > 2:
+            return binascii.hexlify(self.digest()).decode()
+        else:
+            return self.digest().encode('hex')
 
 
 class sha3_224(_SHA3Base):
