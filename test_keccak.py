@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import keccak
 
 from binascii import unhexlify
+from random import RECIP_BPF
 from unittest import TestCase, main
 
 
@@ -148,6 +149,38 @@ class SHA3_512TestCase(TestCase, SHA3TestCaseMixin):
     hash_with_period = (
         'ab7192d2b11f51c7dd744e7b3441febf397ca07bf812cceae122ca4ded638788'
         '9064f8db9230f173f6d1ab6e24b6e50f065b039f799f5592360a6558eb52d760')
+
+
+class FakeSponge(object):
+    byte = b'\xff'
+
+    def squeeze(self, n_bytes):
+        return self.byte * n_bytes
+
+class SpongeRandomTestCase(TestCase):
+    def setUp(self):
+        self.rng = keccak.SpongeRandom(FakeSponge())
+
+    def test_getrandbits(self):
+        for x in range(1, 129):
+            self.assertEqual(self.rng.getrandbits(x), (2 ** x) - 1)
+        self.rng.sponge.byte = b'\x00'
+        for x in range(1, 129):
+            self.assertEqual(self.rng.getrandbits(x), 0)
+
+    def test_random(self):
+        self.assertLess(self.rng.random(), 1)
+        self.assertEqual(self.rng.random() + RECIP_BPF, 1)
+        self.rng.sponge.byte = b'\x00'
+        self.assertEqual(self.rng.random(), 0)
+
+    def test_real_sponge(self):
+        self.rng.sponge = sponge = keccak.Sponge(576, 1024)
+        sponge.absorb(b'hello test data')
+        assert self.rng.getrandbits(8) == 234
+        assert self.rng.getrandbits(7) == 29
+        assert self.rng.getrandbits(6) == 19
+        assert self.rng.getrandbits(1) == 1
 
 
 if __name__ == '__main__':

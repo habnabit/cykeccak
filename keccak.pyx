@@ -2,6 +2,7 @@
 # See COPYING for details.
 
 import binascii
+import random
 
 from cpython.bytes cimport (PyBytes_FromStringAndSize,
                             PyBytes_AsStringAndSize,
@@ -84,6 +85,40 @@ cdef class Sponge:
         if res:
             raise KeccakError()
         return output
+
+
+def _int_of_bytes(bytes s):
+    "Convert a string of bytes to its integer representation."
+    cdef unsigned char *buffer
+    cdef char *tmp
+    cdef Py_ssize_t length, pos
+    PyBytes_AsStringAndSize(s, &tmp, &length)
+    buffer = <unsigned char *>tmp
+    ret = 0
+    for pos in range(length):
+        ret = (ret << 8) | buffer[0]
+        buffer += 1
+    return ret
+
+
+class SpongeRandom(random.SystemRandom):
+    "A ``random.Random`` subclass which derives its entropy from a sponge."
+
+    def __init__(self, sponge):
+        self.sponge = sponge
+
+    def random(self):
+        "Get the next sponge-derived number on the range [0.0, 1.0)."
+        return self.getrandbits(random.BPF) * random.RECIP_BPF
+
+    def getrandbits(self, n_bits):
+        "Generate an integer of ``n_bits`` sponge-squeezed bits."
+        if n_bits <= 0:
+            raise ValueError('number of bits must be greater than zero')
+        n_bytes = (n_bits + 7) // 8
+        squeezed = self.sponge.squeeze(n_bytes)
+        val = _int_of_bytes(squeezed)
+        return val >> (n_bytes * 8 - n_bits)
 
 
 class _SHA3Base:
