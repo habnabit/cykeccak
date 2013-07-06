@@ -1,9 +1,12 @@
 # Copyright (c) Aaron Gallagher <_@habnab.it>
 # See COPYING for details.
 
+from __future__ import unicode_literals
+
 import keccak
 
-from unittest import TestCase
+from binascii import unhexlify
+from unittest import TestCase, main
 
 
 class SHA3TestCaseMixin(object):
@@ -14,16 +17,16 @@ class SHA3TestCaseMixin(object):
 
     def assertHashesEqual(self, hash_obj, hex_hash):
         "Assert that the hex and non-hex digests match an expected value."
-        self.assertEqual(hash_obj.digest(), hex_hash.decode('hex'))
+        self.assertEqual(hash_obj.digest(), unhexlify(hex_hash))
         self.assertEqual(hash_obj.hexdigest(), hex_hash)
 
     def test_empty_hash(self):
         "Providing no input should reliably give an expected output value."
         self.assertHashesEqual(self.hash_factory(), self.hash_empty)
-        self.assertHashesEqual(self.hash_factory(''), self.hash_empty)
+        self.assertHashesEqual(self.hash_factory(b''), self.hash_empty)
 
         h = self.hash_factory()
-        h.update('')
+        h.update(b'')
         self.assertHashesEqual(h, self.hash_empty)
 
     def test_hash_without_period(self):
@@ -31,27 +34,27 @@ class SHA3TestCaseMixin(object):
         Various ways of providing the same hash value of "The quick brown fox
         jumps over the lazy dog" should reliably give an expected output value.
         """
-        self.assertHashesEqual(self.hash_factory('The quick brown fox jumps over the lazy dog'),
+        self.assertHashesEqual(self.hash_factory(b'The quick brown fox jumps over the lazy dog'),
                                self.hash_without_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox jumps over the lazy dog')
+        h.update(b'The quick brown fox jumps over the lazy dog')
         self.assertHashesEqual(h, self.hash_without_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox jumps over the lazy dog')
-        h.update('')
+        h.update(b'The quick brown fox jumps over the lazy dog')
+        h.update(b'')
         self.assertHashesEqual(h, self.hash_without_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox ')
-        h.update('jumps over the lazy dog')
+        h.update(b'The quick brown fox ')
+        h.update(b'jumps over the lazy dog')
         self.assertHashesEqual(h, self.hash_without_period)
 
         h = self.hash_factory()
-        h.update('The quick brown ')
-        h.update('fox')
-        h.update(' jumps over the lazy dog')
+        h.update(b'The quick brown ')
+        h.update(b'fox')
+        h.update(b' jumps over the lazy dog')
         self.assertHashesEqual(h, self.hash_without_period)
 
     def test_hash_with_period(self):
@@ -60,33 +63,33 @@ class SHA3TestCaseMixin(object):
         jumps over the lazy dog." should reliably give an expected output
         value.
         """
-        self.assertHashesEqual(self.hash_factory('The quick brown fox jumps over the lazy dog.'),
+        self.assertHashesEqual(self.hash_factory(b'The quick brown fox jumps over the lazy dog.'),
                                self.hash_with_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox jumps over the lazy dog.')
+        h.update(b'The quick brown fox jumps over the lazy dog.')
         self.assertHashesEqual(h, self.hash_with_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox jumps over the lazy dog.')
-        h.update('')
+        h.update(b'The quick brown fox jumps over the lazy dog.')
+        h.update(b'')
         self.assertHashesEqual(h, self.hash_with_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox ')
-        h.update('jumps over the lazy dog.')
+        h.update(b'The quick brown fox ')
+        h.update(b'jumps over the lazy dog.')
         self.assertHashesEqual(h, self.hash_with_period)
 
         h = self.hash_factory()
-        h.update('The quick brown fox ')
-        h.update('jumps over the lazy dog')
-        h.update('.')
+        h.update(b'The quick brown fox ')
+        h.update(b'jumps over the lazy dog')
+        h.update(b'.')
         self.assertHashesEqual(h, self.hash_with_period)
 
         h = self.hash_factory()
-        h.update('The quick brown ')
-        h.update('fox')
-        h.update(' jumps over the lazy dog.')
+        h.update(b'The quick brown ')
+        h.update(b'fox')
+        h.update(b' jumps over the lazy dog.')
         self.assertHashesEqual(h, self.hash_with_period)
 
     def test_repeatable_digest(self):
@@ -99,16 +102,16 @@ class SHA3TestCaseMixin(object):
         "Calling update after digest should raise a KeccakError."
         h = self.hash_factory()
         h.digest()
-        self.assertRaises(keccak.KeccakError, h.update, 'spam')
+        self.assertRaises(keccak.KeccakError, h.update, b'spam')
 
         h = self.hash_factory()
-        h.update('spam eggs')
+        h.update(b'spam eggs')
         h.digest()
-        self.assertRaises(keccak.KeccakError, h.update, 'spam')
+        self.assertRaises(keccak.KeccakError, h.update, b'spam')
 
-        h = self.hash_factory('spam')
+        h = self.hash_factory(b'spam')
         h.digest()
-        self.assertRaises(keccak.KeccakError, h.update, 'eggs')
+        self.assertRaises(keccak.KeccakError, h.update, b'eggs')
 
 
 class SHA3_224TestCase(TestCase, SHA3TestCaseMixin):
@@ -145,3 +148,7 @@ class SHA3_512TestCase(TestCase, SHA3TestCaseMixin):
     hash_with_period = (
         'ab7192d2b11f51c7dd744e7b3441febf397ca07bf812cceae122ca4ded638788'
         '9064f8db9230f173f6d1ab6e24b6e50f065b039f799f5592360a6558eb52d760')
+
+
+if __name__ == '__main__':
+    main()

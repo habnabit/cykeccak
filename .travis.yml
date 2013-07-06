@@ -7,6 +7,6 @@ python:
   - "3.3"
 
 install:
-  - "pip install Cython pytest --use-mirrors"
+  - "pip install Cython --use-mirrors"
   - "pip install ."
-script: py.test
+script: "python test_keccak.py"
