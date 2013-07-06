@@ -6,5 +6,5 @@ python:
   - "3.2"
   - "3.3"
 
-install: "pip install Cython pytest --use-mirrors"
+install: "pip install Cython pytest . --use-mirrors"
 script: py.test
