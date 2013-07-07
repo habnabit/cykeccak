@@ -1,2 +1,2 @@
 graft src
-include version.txt keccak.c COPYING test_keccak.py README.rst
+include version.txt keccak.c COPYING test_keccak.py README.rst vcversioner.py
