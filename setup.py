@@ -3,10 +3,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from distutils.command.build_ext import build_ext
-from distutils.core import setup
-from distutils.extension import Extension
 import os
+from setuptools.command.build_ext import build_ext
+from setuptools.extension import Extension
+from setuptools import setup
 import vcversioner
 
 # silence, pyflakes.
