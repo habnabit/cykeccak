@@ -1,7 +1,7 @@
 .. image:: https://travis-ci.org/habnabit/cykeccak.png
 
 ========
-cykeccek
+cykeccak
 ========
 
 From the `Keccak website <http://keccak.noekeon.org/index.html>`_:
