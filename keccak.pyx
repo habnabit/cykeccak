@@ -17,6 +17,8 @@ cdef extern from *:
 __version__ = CYKECCAK_VERSION
 __author__ = "Aaron Gallagher <_@habnab.it>"
 __sha__ = CYKECCAK_SHA
+__all__ = ["KeccakError", "Sponge", "SpongeRandom",
+    "sha3_224", "sha3_256", "sha3_384", "sha3_512"]
 
 cdef extern from "KeccakSponge.h":
     ctypedef struct spongeState:
